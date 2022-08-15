@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState,useEffect} from 'react';
 import './Sidebar.css';
 import {Avatar, IconButton} from "@mui/material"
 import DonutLargeIcon from '@mui/icons-material/DonutLarge';
@@ -6,15 +6,31 @@ import ChatIcon from '@mui/icons-material/Chat';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import SidebarChat from './SidebarChat';
+import db from'./firebase';
 
 
 function Sidebar() {
+  const [rooms,setRooms]= useState([]);
+
+  useEffect(() =>{
+   const unsubcribe = db.collection('rooms').onSnapshot((snapshot)=> 
+  setRooms(
+    snapshot.docs.map((doc) =>({
+     id:doc.id,
+     data:doc.data(),
+    }))
+    )
+    );
+
+    return()=>{
+    unsubcribe();
+    }
+  },[])
+
   return (
     <div className="sidebar">
       <div className='sidebar__header'>
-      
-        <Avatar scr='https://scontent-bom1-1.cdninstagram.com/v/t51.2885-19/290986572_167482862442797_256226004884763669_n.jpg?stp=dst-jpg_s320x320&_nc_ht=scontent-bom1-1.cdninstagram.com&_nc_cat=105&_nc_ohc=2IQcJVyHFf8AX9MSf1K&edm=AOQ1c0wBAAAA&ccb=7-5&oh=00_AT_sUpzbxizR6geos3jVia0cZozloCjsTkdIIT_8WDwspA&oe=62F95F32&_nc_sid=8fd12b'/>
-        
+        <Avatar/>
        <div className='sidebar__searchRight'>
         <IconButton>
          <DonutLargeIcon/>
@@ -39,11 +55,9 @@ function Sidebar() {
     
      <div className='sidebar__chats'>
       <SidebarChat addNewChat/>
-      <SidebarChat Huzaifa/>
-      <SidebarChat/>
-      <SidebarChat/>
-      <SidebarChat/>
-      
+      {rooms.map(room =>(
+        <SidebarChat key={room.id} id={room.id} name={room.data.name}/>
+      ))}
       
      </div>
    </div>
@@ -51,4 +65,4 @@ function Sidebar() {
   ) 
 }
 
-export default Sidebar
+export default Sidebar;

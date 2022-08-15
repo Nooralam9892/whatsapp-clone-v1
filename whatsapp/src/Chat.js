@@ -7,20 +7,41 @@ import MicIcon from '@mui/icons-material/Mic';
 import SendSharpIcon from '@mui/icons-material/SendSharp';
 import React, { useEffect, useState } from 'react'
 import'./Chat.css';
+import { useParams } from 'react-router-dom';
+import db from './firebase';
 function Chat() {
-
+  
+  const [input, setInput] = useState("");
   const [seed, setSeed]= useState('')
+  const {roomId}= useParams();
+  const [roomName,setRoomName]= useState()
+
+  useEffect(()=>{
+    if(roomId){
+      db.collection('rooms')
+      .doc(roomId)
+      .onSnapshot((snapshot) =>setRoomName
+      (snapshot.data().name));
+    }
+  },[roomId]);
 
   useEffect(()=>{
     setSeed(Math.floor(Math.random()*5000));
   }, []);
+
+  const sendMessage = (e) =>{
+     e.preventDefault();
+     console.log("You typed >>>",input);
+   
+   setInput("");
+  };
   return (
     <div className='caht'>
         <div className='chat__header'>
         <Avatar src={`https://avatars.dicebear.com/api/human/:${seed}.svg`}/>
         
         <div className='chat__headerInfo'>
-        <h3>Huzaifa</h3>
+        <h3>{roomName}</h3>
         <p>Last seen at...</p>
         </div>
 
@@ -57,8 +78,8 @@ function Chat() {
         <AttachFileIcon/>
         </IconButton>
          <form>
-          <input placeholder='Type a message' type="text"/>
-          {/* <button>Send a message</button> */}
+          <input value={input} onChange={e => setInput(e.target.value)} placeholder='Type a message' type="text"/>
+          <button  onClick={sendMessage} type='submit'>Send a message</button>
          </form>
          <IconButton>
          <SendSharpIcon/>
