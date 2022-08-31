@@ -50,8 +50,8 @@ function Chat() {
      ('messages').add({
       message:input,
       name:user.displayName,
-      timestamp: firebase.firestore.Firestore.serverTimestamp(),
-     })
+      timestamp: firebase.firestore.FeildValue.serverTimestamp(),
+     });
    setInput("");
   };
   return (
@@ -72,7 +72,7 @@ function Chat() {
         
          <IconButton>
          <MoreVertIcon/>
-         </IconButton>
+         </IconButton>            
        </div>
       </div>
 
